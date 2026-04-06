@@ -1,9 +1,11 @@
 // Package set defines simple set utilities, using an underlying map.
 package set
 
+import "fmt"
+
 // Inspired by https://bitfieldconsulting.com/posts/generic-set :)
 
-// Empty struct as the "value" within this hash
+// Set contains keys mapped to empty structs as the "value"
 type Set[E comparable] map[E]struct{}
 
 // NewSet is used to construct a new set with vals
@@ -35,16 +37,21 @@ func (s Set[E]) IsEmpty() bool {
 
 // Clear this set of all elements; note memory is kept allocated.
 func (s Set[E]) Clear() {
-	s.Clear()
+	clear(s)
 }
 
 func (s Set[E]) ToSlice() []E {
 	vals := []E{}
 
-	for v, _ := range s {
+	for v := range s {
 		vals = append(vals, v)
 	}
 	return vals
+}
+
+// String representation of this set
+func (s Set[E]) String() string {
+	return fmt.Sprintf("Set:%v", s.ToSlice())
 }
 
 // Add v to set s
@@ -68,7 +75,7 @@ func (s Set[E]) Union(o Set[E]) Set[E] {
 	union := s.Clone()
 
 	// Harmless (I suppose) overwrite of shared elements
-	for oe, _ := range o {
+	for oe := range o {
 		union[oe] = struct{}{}
 	}
 	return union
@@ -78,7 +85,7 @@ func (s Set[E]) Union(o Set[E]) Set[E] {
 func (s Set[E]) Intersection(o Set[E]) Set[E] {
 	intersection := []E{}
 
-	for oe, _ := range o {
+	for oe := range o {
 		if s.Contains(oe) {
 			intersection = append(intersection, oe)
 		}
@@ -90,7 +97,7 @@ func (s Set[E]) Intersection(o Set[E]) Set[E] {
 func (s Set[E]) Difference(o Set[E]) Set[E] {
 	diff := s.Clone()
 
-	for oe, _ := range o {
+	for oe := range o {
 		delete(diff, oe)
 	}
 	return diff
@@ -99,10 +106,10 @@ func (s Set[E]) Difference(o Set[E]) Set[E] {
 // SymmetricDifference of this set and another, i.e this ^ o, returning a new set.
 // This new set is of elements in exactly ONE set, but not both.
 func (s Set[E]) SymmetricDifference(o Set[E]) Set[E] {
-	symdiff := s.Clone()
+	symdiff := s.Clone().Union(o)
 
-	for oe, _ := range o {
-		if symdiff.Contains(oe) {
+	for oe := range o {
+		if s.Contains(oe) {
 			delete(symdiff, oe)
 		}
 	}
@@ -116,7 +123,7 @@ func (s Set[E]) IsSubset(o Set[E]) bool {
 		return false
 	}
 
-	for se, _ := range s {
+	for se := range s {
 		if !o.Contains(se) {
 			return false
 		}
@@ -131,7 +138,7 @@ func (s Set[E]) IsSuperset(o Set[E]) bool {
 		return false
 	}
 
-	for oe, _ := range o {
+	for oe := range o {
 		if !s.Contains(oe) {
 			return false
 		}
@@ -146,7 +153,7 @@ func (s Set[E]) IsEqual(o Set[E]) bool {
 		return false
 	}
 
-	for oe, _ := range o {
+	for oe := range o {
 		if !s.Contains(oe) {
 			return false
 		}
