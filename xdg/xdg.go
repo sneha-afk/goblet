@@ -29,6 +29,18 @@ func ConfigHome() (string, error) {
 	return dir, err
 }
 
+// ConfigDir returns the path of a configuration directory for an application.
+// For an application xyz, this returns `$HOME/.config/xyz` on Linux/BSD.
+//
+// Does NOT guarantee the directory exists.
+func ConfigDir(app string) (string, error) {
+	dir, err := ConfigHome()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, app), nil
+}
+
 // CacheHome returns the path of `$XDG_CACHE_HOME` if available,
 // else falling back to OS defaults (i.e `$HOME/.cache` on Linux/BSD),
 // which then falls back to `$HOME/.cache`
