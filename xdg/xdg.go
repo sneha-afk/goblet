@@ -1,19 +1,20 @@
-// Package paths provides utilities for handling and retrieving filepaths.
-package paths
+// Package xdg provides utilities for working with the XDG specification
+// See https://specifications.freedesktop.org/basedir/latest/
+package xdg
 
 import (
 	"os"
 	"path/filepath"
 )
 
-// XDGConfigHome returns the path of `$XDG_CONFIG_HOME` if available,
+// ConfigHome returns the path of `$XDG_CONFIG_HOME` if available,
 // else falling back to OS defaults (i.e `$HOME/.config` on Linux/BSD),
 // which then falls back to `$HOME/.config`
 //
 // Does NOT guarantee the directory exists.
-func XDGConfigHome() (string, error) {
+func ConfigHome() (string, error) {
 	envvar, present := os.LookupEnv("XDG_CONFIG_HOME")
-	if present {
+	if present && envvar != "" {
 		return envvar, nil
 	}
 
@@ -28,14 +29,14 @@ func XDGConfigHome() (string, error) {
 	return dir, err
 }
 
-// XDGCacheHome returns the path of `$XDG_CACHE_HOME` if available,
+// CacheHome returns the path of `$XDG_CACHE_HOME` if available,
 // else falling back to OS defaults (i.e `$HOME/.cache` on Linux/BSD),
 // which then falls back to `$HOME/.cache`
 //
 // Does NOT guarantee the directory exists.
-func XDGCacheHome() (string, error) {
+func CacheHome() (string, error) {
 	envvar, present := os.LookupEnv("XDG_CACHE_HOME")
-	if present {
+	if present && envvar != "" {
 		return envvar, nil
 	}
 
@@ -48,16 +49,15 @@ func XDGCacheHome() (string, error) {
 		return filepath.Join(homeDir, ".cache"), nil
 	}
 	return dir, err
-
 }
 
-// XDGDataHome returns the path of `$XDG_DATA_HOME` if available,
+// DataHome returns the path of `$XDG_DATA_HOME` if available,
 // else falling back to `$HOME/.local/share`
 //
 // Does NOT guarantee the directory exists.
-func XDGDataHome() (string, error) {
+func DataHome() (string, error) {
 	envvar, present := os.LookupEnv("XDG_DATA_HOME")
-	if present {
+	if present && envvar != "" {
 		return envvar, nil
 	}
 
